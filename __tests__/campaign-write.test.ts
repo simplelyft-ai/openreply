@@ -77,4 +77,12 @@ describe("campaign write API", () => {
     expect(data).toMatchObject({ requireFollow: true, followGentle: true, openingDmEnabled: true, followUpEnabled: true, followUpDelayMinutes: 180 });
     expect(campaignWriteSchema.safeParse({ ...input, followMode: "maybe" }).success).toBe(false);
   });
+  it("exact match fires only when the comment is just the keyword", async () => {
+    const { matchKeywords } = await import("../lib/utils/keyword-matcher");
+    expect(matchKeywords("AI", ["AI"], true, true).matched).toBe(true);
+    expect(matchKeywords("ai 🙏🔥", ["AI"], true, true).matched).toBe(true);
+    expect(matchKeywords("AI!!", ["AI"], true, true).matched).toBe(true);
+    expect(matchKeywords("AI is changing everything", ["AI"], true, true).matched).toBe(false);
+    expect(matchKeywords("AI is changing everything", ["AI"], true, false).matched).toBe(true);
+  });
 });

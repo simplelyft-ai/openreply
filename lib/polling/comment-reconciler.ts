@@ -77,7 +77,7 @@ export async function reconcileComments(): Promise<void> {
       matchAnyPost: true,
       matchAnyWord: true,
       keywords: true,
-      wholeWordMatch: true,
+      wholeWordMatch: true, exactMatch: true,
       publicReplyEnabled: true,
       workspaceId: true,
       instagramAccount: {
@@ -129,6 +129,7 @@ async function sweepCampaign({
     matchAnyWord: boolean;
     keywords: string[];
     wholeWordMatch: boolean;
+    exactMatch?: boolean;
     publicReplyEnabled: boolean;
     instagramAccount: {
       id: string;
@@ -215,7 +216,8 @@ async function sweepCampaign({
         : matchKeywords(
             c.text ?? "",
             automation.keywords,
-            automation.wholeWordMatch
+            automation.wholeWordMatch,
+            automation.exactMatch
           ).matched;
       if (!matched) return false;
       stat.matched += 1;

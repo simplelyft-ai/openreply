@@ -171,7 +171,10 @@ export function foldDiacritics(text: string): string {
 export function matchKeywords(
   commentText: string,
   keywords: string[],
-  wholeWordMatch: boolean = true
+  wholeWordMatch: boolean = true,
+  // SimpleLyft: the comment must be only the keyword (emoji, punctuation and
+  // repeats allowed), so simple words like "AI" don't fire on normal comments.
+  exactMatch: boolean = false
 ): KeywordMatchResult {
   if (!commentText || keywords.length === 0) {
     return { matched: false, matchedKeyword: null };
@@ -201,6 +204,14 @@ export function matchKeywords(
     const compareKeyword = numericLike
       ? foldNumericHomoglyphs(cleanedKeyword)
       : cleanedKeyword;
+
+    if (exactMatch) {
+      const words = compareText.trim().split(/\s+/).filter(Boolean);
+      if (words.length > 0 && words.every((w) => w === compareKeyword)) {
+        return { matched: true, matchedKeyword: keyword };
+      }
+      continue;
+    }
 
     if (wholeWordMatch) {
       const escapedKeyword = compareKeyword.replace(

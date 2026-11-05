@@ -221,6 +221,8 @@ model Automation {
   publicReplyMessages String[] @default([])
   isActive       Boolean @default(true)
   wholeWordMatch Boolean @default(true)
+  // SimpleLyft: comment must be only the keyword.
+  exactMatch     Boolean @default(false)
   reportShareSlug    String? @unique
   reportShareEnabled Boolean @default(true)
 

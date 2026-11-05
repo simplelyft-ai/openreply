@@ -20,6 +20,8 @@ export const campaignWriteSchema = z
     matchAnyPost: z.boolean().optional().default(false),
     keywords: z.array(z.string().trim().min(1).max(50)).min(1).max(10),
     wholeWordMatch: z.boolean().optional().default(true),
+    // SimpleLyft: fire only when the comment is just the keyword.
+    exactMatch: z.boolean().optional().default(false),
     dmMessage: z.string().min(1).max(1000),
     linkButtonLabel: z.string().max(20).optional().nullable(),
     trackedDestinationUrl: z.union([z.string().url(), z.literal("")]).optional().nullable(),
@@ -51,7 +53,7 @@ function fields(d: CampaignWrite) {
     postId: d.matchAnyPost ? null : d.postId ?? null,
     postUrl: d.matchAnyPost ? null : d.postUrl ?? null,
     pendingNextReel: false, matchAnyPost: d.matchAnyPost,
-    keywords: d.keywords, matchAnyWord: false, wholeWordMatch: d.wholeWordMatch,
+    keywords: d.keywords, matchAnyWord: false, wholeWordMatch: d.wholeWordMatch, exactMatch: d.exactMatch,
     dmMessage: d.dmMessage, linkButtonLabel: d.linkButtonLabel || null,
     publicReplyEnabled: d.publicReplyEnabled,
     publicReplyMessages: d.publicReplyEnabled ? d.publicReplyMessages : [],
