@@ -980,7 +980,10 @@ async function processPostback(job: Job<ProcessPostbackJob>): Promise<void> {
     // "User consent is required", i.e. null), so failing open here handed the
     // link to anyone who read the opening DM and waited, follower or not.
     if (fallback && follows !== true) return;
-    if (follows === false) {
+    // Gentle gate (SimpleLyft): the follow prompt is shown once; a tap on its
+    // own button delivers the link even if the follow hasn't registered.
+    const gentlePass = automation.followGentle && isFollowCheck && !fromOpeningDm;
+    if (follows === false && !gentlePass) {
       if (fallback) return;
 
       // A tap on an opening-DM button is not a claim to follow — most people

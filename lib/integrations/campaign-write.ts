@@ -28,6 +28,14 @@ export const campaignWriteSchema = z
     publicReplyEnabled: z.boolean().optional().default(false),
     publicReplyMessages: z.array(z.string().trim().min(1).max(1000)).max(10).optional().default([]),
     isActive: z.boolean().optional().default(true),
+    // Follow ask. "gentle" (SimpleLyft): ask once, then send the link whether or not they followed.
+    followMode: z.enum(["off", "strict", "gentle"]).optional().default("off"),
+    followPromptMessage: z.string().min(1).max(1000).optional().nullable(),
+    followPromptButtonLabel: z.string().max(20).optional().nullable(),
+    openingDmMessage: z.string().min(1).max(1000).optional().nullable(),
+    openingDmButtonLabel: z.string().max(20).optional().nullable(),
+    followUpMessage: z.string().min(1).max(1000).optional().nullable(),
+    followUpDelayMinutes: z.number().int().min(0).max(1380).optional().default(0),
   })
   .strict()
   .refine((d) => d.matchAnyPost || Boolean(d.postId), { message: "Give postId, or set matchAnyPost", path: ["postId"] })
@@ -49,6 +57,12 @@ function fields(d: CampaignWrite) {
     publicReplyMessages: d.publicReplyEnabled ? d.publicReplyMessages : [],
     publicReplyMessage: d.publicReplyEnabled ? d.publicReplyMessages[0] ?? null : null,
     isActive: d.isActive,
+    requireFollow: d.followMode !== "off", followGentle: d.followMode === "gentle",
+    followPromptMessage: d.followPromptMessage ?? null, followPromptButtonLabel: d.followPromptButtonLabel || null,
+    openingDmEnabled: Boolean(d.openingDmMessage && d.openingDmButtonLabel),
+    openingDmMessage: d.openingDmMessage ?? null, openingDmButtonLabel: d.openingDmButtonLabel || null,
+    followUpEnabled: Boolean(d.followUpMessage), followUpMessage: d.followUpMessage ?? null,
+    followUpDelayMinutes: d.followUpDelayMinutes,
   };
 }
 

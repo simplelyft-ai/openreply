@@ -207,6 +207,8 @@ model Automation {
   openingDmButtonLabel String?
   linkButtonLabel      String?
   requireFollow           Boolean @default(false)
+  // SimpleLyft: ask to follow once, then deliver the link anyway.
+  followGentle            Boolean  @default(false)
   followPromptMessage     String?
   followPromptButtonLabel String?
   followUpEnabled Boolean @default(false)

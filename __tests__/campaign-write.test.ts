@@ -68,4 +68,13 @@ describe("campaign write API", () => {
     await expect(setCampaignActive(writer, "other", false)).rejects.toThrow("Campaign not found");
     expect(state.automation.updateMany.mock.calls[0][0].where).toEqual({ id: "other", workspaceId: "ws" });
   });
+  it("gentle follow mode asks once and keeps the opening DM and follow-up", async () => {
+    state.automation.findFirst.mockResolvedValue(null);
+    state.automation.create.mockResolvedValue({ id: "c1" });
+    await upsertCampaign(writer, { ...input, followMode: "gentle", followPromptMessage: "Follow?", followPromptButtonLabel: "Done",
+      openingDmMessage: "Here you go", openingDmButtonLabel: "Send it", followUpMessage: "Did it land?", followUpDelayMinutes: 180 });
+    const data = state.automation.create.mock.calls[0][0].data;
+    expect(data).toMatchObject({ requireFollow: true, followGentle: true, openingDmEnabled: true, followUpEnabled: true, followUpDelayMinutes: 180 });
+    expect(campaignWriteSchema.safeParse({ ...input, followMode: "maybe" }).success).toBe(false);
+  });
 });
