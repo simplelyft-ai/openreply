@@ -984,7 +984,10 @@ async function processPostback(job: Job<ProcessPostbackJob>): Promise<void> {
     // Gentle gate (SimpleLyft): the follow prompt is shown once; a tap on its
     // own button delivers the link even if the follow hasn't registered.
     const gentlePass = automation.followGentle && isFollowCheck && !fromOpeningDm;
-    if (follows === false && !gentlePass) {
+    // Gentle gate: everyone sees the follow ask once (after the opening DM),
+    // followers included; the prompt's own button then delivers the link.
+    const gentleAsk = automation.followGentle && fromOpeningDm;
+    if ((follows === false && !gentlePass) || gentleAsk) {
       if (fallback) return;
 
       // A tap on an opening-DM button is not a claim to follow — most people
