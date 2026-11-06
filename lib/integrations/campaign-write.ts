@@ -40,7 +40,8 @@ export const campaignWriteSchema = z
     followUpDelayMinutes: z.number().int().min(0).max(1380).optional().default(0),
   })
   .strict()
-  .refine((d) => d.matchAnyPost || Boolean(d.postId), { message: "Give postId, or set matchAnyPost", path: ["postId"] })
+  // SimpleLyft: a paused campaign may wait for its reel (created at Push to Review, bound when the reel goes live).
+  .refine((d) => d.matchAnyPost || Boolean(d.postId) || d.isActive === false, { message: "Give postId, set matchAnyPost, or create it paused", path: ["postId"] })
   .refine((d) => !d.publicReplyEnabled || d.publicReplyMessages.length > 0, {
     message: "Public replies need at least one message", path: ["publicReplyMessages"],
   });

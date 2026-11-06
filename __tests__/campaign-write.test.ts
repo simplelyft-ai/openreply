@@ -85,4 +85,9 @@ describe("campaign write API", () => {
     expect(matchKeywords("AI is changing everything", ["AI"], true, true).matched).toBe(false);
     expect(matchKeywords("AI is changing everything", ["AI"], true, false).matched).toBe(true);
   });
+  it("a paused campaign can wait for its reel; an active one needs a post", () => {
+    const { postId, postUrl, ...noPost } = input;
+    expect(campaignWriteSchema.safeParse({ ...noPost, isActive: false }).success).toBe(true);
+    expect(campaignWriteSchema.safeParse({ ...noPost, isActive: true }).success).toBe(false);
+  });
 });
